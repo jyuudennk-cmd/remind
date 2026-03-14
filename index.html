@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>スマホ健康診断 予定登録</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQW0KHN4MF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-ZQW0KHN4MF');
+  </script>
+
+  <style>
+    /* スマホで見やすいようにデザイン（お好みで変更してください） */
+    body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f9f9f9; color: #333; }
+    .container { background: #fff; padding: 25px 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
+    h1 { font-size: 1.3em; color: #b71c1c; margin-bottom: 20px; }
+    p { font-size: 0.9em; line-height: 1.6; text-align: left; }
+    /* ノベルティ訴求エリア */
+    .present { background: #fff3e0; border: 2px solid #ff9800; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: #e65100; text-align: center; }
+    .present span { font-size: 1.2em; display: block; margin-bottom: 5px; }
+    /* ボタンデザイン */
+    .btn { display: block; width: 100%; padding: 15px; margin: 15px 0; font-size: 1em; font-weight: bold; color: #fff; background-color: #d32f2f; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    .btn:active { background-color: #b71c1c; transform: scale(0.98); }
+    .notice { font-size: 0.8em; color: #777; margin-top: 20px; text-align: center; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>📱 スマホ健康診断</h1>
+  
+  <div class="present">
+    <span>🎁 相談来店特典！</span>
+    診断ご来店時に、素敵なノベルティをプレゼントいたします！
+  </div>
+
+  <p>ご購入ありがとうございます。快適にスマホをお使いいただくため、定期的な「健康診断」をおすすめしています。<br><br>「使い方がわからない」「料金を見直したい」など、お困りごともお気軽にご相談ください。<br>忘れないように、以下のボタンからカレンダーに予定をご登録ください。</p>
+  
+  <button class="btn" onclick="registerCalendar(3)">📅 3か月診断をカレンダーに登録</button>
+  <button class="btn" onclick="registerCalendar(6)">📅 6か月診断をカレンダーに登録</button>
+
+  <p class="notice">※ボタンを押すと、お使いのカレンダーに予定追加画面が開きます。</p>
+</div>
+
+<script>
+  // GA4に明示的に page_view を送信
+  gtag('event', 'page_view');
+
+  // カレンダー登録を実行する関数（引数 months に 3 や 6 が入る）
+  function registerCalendar(months) {
+    const today = new Date();
+    
+    // ◯ヶ月後の同じ日をセット (月初にしたい場合は today.getDate() を 1 に変更してください)
+    const target = new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
+
+    const y = target.getFullYear();
+    const m = String(target.getMonth() + 1).padStart(2, '0');
+    const d = String(target.getDate()).padStart(2, '0');
+    const startDate = `${y}${m}${d}`;
+
+    // 終日イベント（翌日を終了日に）
+    const nextDay = new Date(target);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDate = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, '0')}${String(nextDay.getDate()).padStart(2, '0')}`;
+
+    // カレンダーに登録されるタイトルと詳細文
+    const title = `【イオンモバイル】スマホ健康診断（${months}か月目）`;
+    const description = `ご購入から${months}か月が経過しました。スマホの操作でお困りごとはありませんか？\n\n★相談来店特典★\nご来店時にこの予定画面をご提示いただくと、素敵なノベルティをプレゼント！\n\nスマホカエドキプログラムのご相談も承ります。\nお近くのイオンモバイルはこちら\nhttps://aeonmobile.jp/shoplist/`;
+
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+    if (isIOS) {
+      // ===== iOS用 ICS生成 =====
+      // ※iOSカレンダー用に改行コードを適切に処理
+      const formattedDescription = description.replace(/\n/g, '\\n');
+      const ics =
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//QR Calendar//JP
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:${startDate}
+DTEND;VALUE=DATE:${endDate}
+SUMMARY:${title}
+DESCRIPTION:${formattedDescription}
+END:VEVENT
+END:VCALENDAR`;
+
+      const blob = new Blob([ics], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      location.href = url;
+
+    } else {
+      // ===== Googleカレンダー =====
+      // URLに含めるためにテキストをエンコード処理
+      const calendarUrl =
+        "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+        "&text=" + encodeURIComponent(title) +
+        "&dates=" + startDate + "/" + endDate +
+        "&details=" + encodeURIComponent(description);
+
+      // 元の画面を残したまま別タブで開く
+      window.open(calendarUrl, '_blank');
+    }
+    
+    // ボタンが押されたことをGA等で計測したい場合はここに追記できます
+    gtag('event', `click_calendar_${months}m`);
+  }
+</script>
+
+</body>
+</html>
