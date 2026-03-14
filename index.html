@@ -5,18 +5,16 @@
   <title>スマホ健康診断 予定登録</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* （前のCSSと同じ） */
     body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f9f9f9; color: #333; }
     .container { background: #fff; padding: 25px 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
     h1 { font-size: 1.3em; color: #b71c1c; margin-bottom: 20px; }
     p { font-size: 0.9em; line-height: 1.6; text-align: left; }
     .present { background: #fff3e0; border: 2px solid #ff9800; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: #e65100; text-align: center; }
+    .present span { font-size: 1.2em; display: block; margin-bottom: 5px; }
     .btn { display: block; width: 100%; padding: 15px; margin: 15px 0; font-size: 1em; font-weight: bold; color: #fff; background-color: #d32f2f; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-    
-    /* ▼ 店舗検索用のボタンデザイン ▼ */
+    .btn:active { background-color: #b71c1c; transform: scale(0.98); }
     .btn-map { background-color: #1976d2; margin-top: 30px;}
     .btn-map:active { background-color: #0d47a1; }
-    
     .notice { font-size: 0.8em; color: #777; margin-top: 20px; text-align: center; }
   </style>
 </head>
@@ -27,7 +25,7 @@
   
   <div class="present">
     <span>🎁 相談来店特典！</span>
-    診断ご来店時に、素敵なノベルティをプレゼントいたします！
+    診断ご来店時に、この画面をご提示で<br>素敵なノベルティをプレゼント！
   </div>
 
   <p>ご購入ありがとうございます。定期的な「健康診断」をおすすめしています。<br>忘れないように、以下のボタンからカレンダーにご登録ください。</p>
@@ -37,42 +35,100 @@
 
   <button class="btn btn-map" onclick="findNearbyStore()">📍 現在地から近くの店舗を探す</button>
 
-  <p class="notice">※ボタンを押すと、お使いのカレンダーに予定追加画面が開きます。</p>
+  <p class="notice">※ボタンを押すとカレンダーやマップが開きます。</p>
 </div>
 
 <script>
-  // カレンダー登録処理（省略：前回と同じ）
+  // iOS判定を共通化
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // ▼ カレンダー登録処理 ▼
   function registerCalendar(months) {
-      // ...前回のコード...
+    const today = new Date();
+    const target = new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
+
+    const y = target.getFullYear();
+    const m = String(target.getMonth() + 1).padStart(2, '0');
+    const d = String(target.getDate()).padStart(2, '0');
+    const startDate = `${y}${m}${d}`;
+
+    const nextDay = new Date(target);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDate = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, '0')}${String(nextDay.getDate()).padStart(2, '0')}`;
+
+    const title = `【イオンモバイル】スマホ健康診断（${months}か月目）`;
+    const description = `ご購入から${months}か月が経過しました。スマホの操作でお困りごとはありませんか？\n\n★相談来店特典★\nご来店時にこの予定画面をご提示いただくと、素敵なノベルティをプレゼント！\n\nスマホカエドキプログラムのご相談も承ります。\nお近くのイオンモバイルはこちら\nhttps://aeonmobile.jp/shoplist/`;
+
+    if (isIOS) {
+      // iOS用 ICS生成（改行コードを \r\n に厳密化）
+      const formattedDescription = description.replace(/\n/g, '\\n');
+      const ics = 
+        "BEGIN:VCALENDAR\r\n" +
+        "VERSION:2.0\r\n" +
+        "PRODID:-//QR Calendar//JP\r\n" +
+        "BEGIN:VEVENT\r\n" +
+        "DTSTART;VALUE=DATE:" + startDate + "\r\n" +
+        "DTEND;VALUE=DATE:" + endDate + "\r\n" +
+        "SUMMARY:" + title + "\r\n" +
+        "DESCRIPTION:" + formattedDescription + "\r\n" +
+        "END:VEVENT\r\n" +
+        "END:VCALENDAR";
+
+      // Blobと見えないリンクを使ってダウンロードを促す
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'schedule.ics';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+    } else {
+      // Android/PC用 Googleカレンダー
+      const calendarUrl =
+        "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+        "&text=" + encodeURIComponent(title) +
+        "&dates=" + startDate + "/" + endDate +
+        "&details=" + encodeURIComponent(description);
+      window.open(calendarUrl, '_blank');
+    }
   }
 
   // ▼ 位置情報を取得して近くの店舗を探す処理 ▼
   function findNearbyStore() {
-    // ブラウザが位置情報に対応しているかチェック
     if (navigator.geolocation) {
-      // ユーザーに位置情報の許可を求め、取得する
       navigator.geolocation.getCurrentPosition(
         function(position) {
-          // 取得成功時の処理
-          const lat = position.coords.latitude;  // 緯度
-          const lng = position.coords.longitude; // 経度
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const keyword = encodeURIComponent('イオンモバイル');
           
-          // Googleマップで現在地周辺の「イオンモバイル」を検索するURLを開く
-          const mapUrl = `https://www.google.com/maps/search/イオンモバイル/@${lat},${lng},13z`;
-          window.open(mapUrl, '_blank');
+          let mapUrl = "";
+          if (isIOS) {
+            // iOSなら標準のAppleマップを開く（最も確実）
+            mapUrl = `https://maps.apple.com/?q=${keyword}&ll=${lat},${lng}`;
+          } else {
+            // Android/PCならGoogleマップを開く
+            mapUrl = `https://www.google.com/maps/search/?api=1&query=${keyword}`;
+          }
+          window.location.href = mapUrl;
         },
         function(error) {
-          // 取得失敗時（ユーザーが「許可しない」を選んだ場合など）の処理
           alert("位置情報が取得できなかったため、全国の店舗一覧ページを開きます。");
           window.open('https://aeonmobile.jp/shoplist/', '_blank');
         }
       );
     } else {
-      // 位置情報非対応のブラウザの場合
       window.open('https://aeonmobile.jp/shoplist/', '_blank');
     }
   }
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
