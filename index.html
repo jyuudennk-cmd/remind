@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>スマホ健康診断 予定登録</title>
+  <title>リマインド登録</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQW0KHN4MF"></script>
@@ -14,54 +14,71 @@
   </script>
 
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f9f9f9; color: #333; }
-    .container { background: #fff; padding: 25px 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; }
-    h1 { font-size: 1.3em; color: #b71c1c; margin-bottom: 20px; }
-    p { font-size: 0.9em; line-height: 1.6; text-align: left; }
+    /* 6インチスマホ向けに余白とサイズを最適化したコンパクト設計 */
+    body { font-family: sans-serif; text-align: center; padding: 10px; background-color: #f0f4f8; color: #333; margin: 0; }
+    .container { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; box-sizing: border-box; }
     
-    .present { background: #fff3e0; border: 2px solid #ff9800; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: #e65100; text-align: center; }
-    .present span { font-size: 1.2em; display: block; margin-bottom: 5px; }
+    h1 { font-size: 1.25em; color: #b71c1c; margin: 5px 0 15px 0; }
     
-    .btn { display: block; width: 100%; padding: 15px; margin: 15px 0; font-size: 1em; font-weight: bold; color: #fff; background-color: #d32f2f; border: none; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+    /* セクション見出し */
+    .section-title { font-size: 0.85em; font-weight: bold; color: #555; text-align: left; margin: 15px 0 8px; border-bottom: 2px solid #eee; padding-bottom: 4px;}
+    
+    /* 上部：割引終了リンクのボタンデザイン */
+    .link-grid { display: flex; flex-direction: column; gap: 8px; }
+    .link-grid a { display: block; padding: 12px; font-size: 0.9em; font-weight: bold; color: #fff; background-color: #ff9800; border-radius: 8px; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
+    .link-grid a:active { background-color: #e65100; transform: scale(0.98); }
+
+    /* 中部：スマホ診断と特典 */
+    .present { background: #fff3e0; border: 2px solid #ff9800; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; color: #e65100; font-size: 0.85em; }
+    
+    /* 3ヶ月・6ヶ月ボタンを横並びにする設定 */
+    .flex-btns { display: flex; gap: 10px; }
+    .btn { flex: 1; padding: 12px 5px; font-size: 0.85em; font-weight: bold; color: #fff; background-color: #d32f2f; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .btn:active { background-color: #b71c1c; transform: scale(0.98); }
     
-    .btn-map { background-color: #1976d2; margin-top: 30px;}
+    /* 下部：マップボタン */
+    .btn-map { width: 100%; background-color: #1976d2; padding: 12px;}
     .btn-map:active { background-color: #0d47a1; }
     
-    .notice { font-size: 0.8em; color: #777; margin-top: 20px; text-align: center; }
+    .notice { font-size: 0.7em; color: #777; margin-top: 15px; text-align: center; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>📱 スマホ健康診断</h1>
+  <h1>🔔 リマインド登録しよう！</h1>
   
-  <div class="present">
-    <span>🎁 相談来店特典！</span>
-    診断ご来店時に、素敵なノベルティをプレゼントいたします！
+  <div class="section-title">⏱ 各種割引・プログラムの終了時期</div>
+  <div class="link-grid">
+    <a href="https://jyuudennk-cmd.github.io/calender-23ipandroid/">📱 スマホカエドキプログラム（23ヶ月目）</a>
+    <a href="https://jyuudennk-cmd.github.io/calendar-7U22/">🎓 U22割引終了（7ヶ月目）</a>
+    <a href="https://jyuudennk-cmd.github.io/calendar-3U29/">✨ U29割引終了（3ヶ月目）</a>
   </div>
 
-  <p>ご購入ありがとうございます。定期的な「健康診断」をおすすめしています。<br><br>「無料クリーニング」や「バッテリーチェック」を実施中ですので、忘れないように以下のボタンからカレンダーにご登録ください。</p>
-  
-  <button class="btn" onclick="registerCalendar(3)">📅 3か月診断をカレンダーに登録</button>
-  <button class="btn" onclick="registerCalendar(6)">📅 6か月診断をカレンダーに登録</button>
+  <div class="section-title">🩺 スマホ健康診断（無料メンテナンス）</div>
+  <div class="present">
+    🎁 相談来店でノベルティプレゼント！
+  </div>
+  <div class="flex-btns">
+    <button class="btn" onclick="registerCalendar(3)">📅 3か月診断</button>
+    <button class="btn" onclick="registerCalendar(6)">📅 6か月診断</button>
+  </div>
 
-  <button class="btn btn-map" onclick="findNearbyStore()">📍 現在地から近くの店舗を探す</button>
+  <div class="section-title">📍 店舗案内</div>
+  <button class="btn btn-map" onclick="findNearbyStore()">現在地から近くの店舗を探す</button>
 
   <p class="notice">※ボタンを押すとカレンダーやマップが開きます。</p>
 </div>
 
 <script>
-  // GA4に明示的に page_view を送信
+  // GA4計測
   gtag('event', 'page_view');
 
-  // iOS判定を共通化
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-  // ▼ カレンダー登録処理 ▼
+  // ▼ スマホ健康診断カレンダー登録処理 ▼
   function registerCalendar(months) {
     const today = new Date();
-    // 今日から指定月数後の同じ日を計算
     const target = new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
 
     const y = target.getFullYear();
@@ -69,17 +86,15 @@
     const d = String(target.getDate()).padStart(2, '0');
     const startDate = `${y}${m}${d}`;
 
-    // 終日イベント用（翌日を終了日に）
     const nextDay = new Date(target);
     nextDay.setDate(nextDay.getDate() + 1);
     const endDate = `${nextDay.getFullYear()}${String(nextDay.getMonth() + 1).padStart(2, '0')}${String(nextDay.getDate()).padStart(2, '0')}`;
 
-    // カレンダーのタイトルと詳細テキスト（引換券URLを含む）
     const title = `【イオンモバイル】スマホ健康診断・無料メンテナンス（${months}か月目）`;
+    // 引換券URL（ticket/）も組み込み済みです
     const description = `ご購入から${months}か月が経過しました。\n\n毎日使うスマホ、見えない汚れが溜まっていませんか？\n店頭にて「無料クリーニング」や「バッテリーの劣化チェック」を実施中です！\n料金見直しや操作のお困りごともお気軽にご相談ください。\n\n🎫 ご来店特典・ノベルティ引換券はこちら\nhttps://jyuudennk-cmd.github.io/ticket/\n\nスマホカエドキプログラムのご相談も承ります。\nお近くのイオンモバイルはこちら\nhttps://aeonmobile.jp/shoplist/`;
 
     if (isIOS) {
-      // iOS用 ICS生成（改行コードを \r\n に厳密化）
       const formattedDescription = description.replace(/\n/g, '\\n');
       const ics = 
         "BEGIN:VCALENDAR\r\n" +
@@ -93,7 +108,6 @@
         "END:VEVENT\r\n" +
         "END:VCALENDAR";
 
-      // Blobと見えないリンクを使ってダウンロードを促す
       const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -104,9 +118,7 @@
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
-
     } else {
-      // Android/PC用 Googleカレンダー連携
       const calendarUrl =
         "https://calendar.google.com/calendar/render?action=TEMPLATE" +
         "&text=" + encodeURIComponent(title) +
@@ -115,7 +127,6 @@
       window.open(calendarUrl, '_blank');
     }
 
-    // ボタンクリックをGA4で計測
     gtag('event', `click_calendar_${months}m`);
   }
 
@@ -130,22 +141,19 @@
           
           let mapUrl = "";
           if (isIOS) {
-            // iOSなら標準のAppleマップを開く
             mapUrl = `https://maps.apple.com/?q=${keyword}&ll=${lat},${lng}`;
           } else {
-            // Android/PCならGoogleマップを開く
-            mapUrl = `https://www.google.com/maps?q=${keyword}&ll=${lat},${lng}`;
+            // Android用のGoogleマップURL
+            mapUrl = `https://www.google.com/maps/search/?api=1&query=${keyword}&center=${lat},${lng}`;
           }
           window.location.href = mapUrl;
         },
         function(error) {
-          // 位置情報が拒否された場合などのフォールバック
           alert("位置情報が取得できなかったため、全国の店舗一覧ページを開きます。");
           window.open('https://aeonmobile.jp/shoplist/', '_blank');
         }
       );
     } else {
-      // 位置情報非対応ブラウザのフォールバック
       window.open('https://aeonmobile.jp/shoplist/', '_blank');
     }
   }
