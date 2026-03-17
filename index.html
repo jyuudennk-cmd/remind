@@ -18,7 +18,6 @@
     body { font-family: sans-serif; text-align: center; padding: 10px; background-color: #f0f4f8; color: #333; margin: 0; }
     .container { background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 0 auto; box-sizing: border-box; }
     
-    /* ▼ 新規追加：御礼メッセージのデザイン ▼ */
     .greeting { font-size: 0.9em; font-weight: bold; color: #1976d2; background-color: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 12px; line-height: 1.4; text-align: center; }
     
     h1 { font-size: 1.1em; color: #b71c1c; margin: 5px 0 15px 0; }
@@ -67,13 +66,15 @@
   </div>
 
   <div class="section-title">📍 店舗案内</div>
-  <button class="btn btn-map" onclick="findNearbyStore()">現在地から近くの店舗を探す</button>
+  <button class="btn btn-map" onclick="findNearbyStore()">近くの店舗を探す</button>
 
-  <p class="notice">※ボタンを押すとカレンダーやマップが開きます。</p>
+  <p class="notice">※ボタンを押すとカレンダーや店舗案内が開きます。</p>
 </div>
 
 <script>
   gtag('event', 'page_view');
+  
+  // iOS判定（iPhone, iPad, iPod）
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   function registerCalendar(months) {
@@ -128,7 +129,15 @@
     gtag('event', `click_calendar_${months}m`);
   }
 
+  // ▼ 位置情報を取得して近くの店舗を探す処理（iOS対応版） ▼
   function findNearbyStore() {
+    if (isIOS) {
+      // 💡 変更点：iOSの場合は位置情報を要求せず、直接店舗一覧ページへ飛ばす
+      window.open('https://aeonmobile.jp/shoplist/', '_blank');
+      return; // ここで処理を終了させる
+    }
+
+    // Android/PCの場合は位置情報を取得してGoogleマップへ
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function(position) {
@@ -136,15 +145,12 @@
           const lng = position.coords.longitude;
           const keyword = encodeURIComponent('イオンモバイル');
           
-          let mapUrl = "";
-          if (isIOS) {
-            mapUrl = `https://maps.apple.com/?q=${keyword}&ll=${lat},${lng}`;
-          } else {
-            mapUrl = `https://www.google.com/maps/search/?api=1&query=${keyword}&center=${lat},${lng}`;
-          }
+          // Googleマップの検索URLへ
+          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${keyword}`;
           window.location.href = mapUrl;
         },
         function(error) {
+          // 取得失敗時は店舗一覧へ
           alert("位置情報が取得できなかったため、全国の店舗一覧ページを開きます。");
           window.open('https://aeonmobile.jp/shoplist/', '_blank');
         }
